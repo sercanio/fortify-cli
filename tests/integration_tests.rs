@@ -7,7 +7,7 @@ fn test_password_generation() {
     cmd.arg("password")
         .arg("--length")
         .arg("20")
-        .arg("--no-copy") // Ensure we don't try to copy in CI/Test env
+        .arg("--no-copy")
         .assert()
         .success()
         .stdout(predicate::str::is_match(r"^.{20}\nStrength:").unwrap());
@@ -16,7 +16,6 @@ fn test_password_generation() {
 #[test]
 fn test_password_specific_flags() {
     let mut cmd = Command::cargo_bin("fortify-cli").unwrap();
-    // Only numbers
     cmd.arg("password")
         .arg("--length")
         .arg("10")
@@ -72,6 +71,5 @@ fn test_secret_base64_generation() {
         .arg("--no-copy")
         .assert()
         .success()
-        // Base64 of 10 bytes is roughly 16 chars (padded)
         .stdout(predicate::str::is_match(r"^[A-Za-z0-9+/=]+").unwrap());
 }

@@ -1,6 +1,4 @@
 use arboard::Clipboard;
-// use std::process::{Command, Stdio}; // Reserved for Worker implementation
-// use std::io::Write;                 // Reserved for Worker implementation
 use std::env;
 
 /// Result of a clipboard operation
@@ -14,7 +12,7 @@ pub enum ClipboardResult {
 pub fn copy_text(text: &str) -> ClipboardResult {
     // 1. Try to detect if we are in a headless environment
     if is_headless() {
-        // TODO: Implement OSC 52 fallback here
+        // Headless fallback not implemented
         return ClipboardResult::Unavailable;
     }
 
@@ -47,15 +45,6 @@ fn copy_direct(text: &str) -> ClipboardResult {
 
 #[cfg(target_os = "linux")]
 fn copy_linux(text: &str) -> ClipboardResult {
-    // Strategy:
-    // 1. Try direct copy first (optimistic).
-    //    Actually, direct copy on X11 fails if we exit immediately.
-    //    So we should prefer the worker strategy if we want persistence.
-    //    For now, we stick to direct copy as the refactor step, 
-    //    but we structure this to easily add the worker later.
-    
-    // Placeholder for Phase 2 (Worker)
-    // For now, use direct copy.
     copy_direct(text)
 }
 

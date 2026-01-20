@@ -28,7 +28,5 @@ mod tests {
     fn test_guid_v7() {
         let guid = generate_guid(GuidVersion::V7);
         assert!(Uuid::parse_str(&guid).is_ok());
-        // let uuid = Uuid::parse_str(&guid).unwrap();
-        // assert_eq!(uuid.get_version(), Some(uuid::Version::Sortable));
     }
 }

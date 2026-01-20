@@ -24,7 +24,7 @@ mod tests {
     fn test_secret_hex_length() {
         let length = 16;
         let secret = generate_secret(length, SecretEncoding::Hex);
-        assert_eq!(secret.len(), length * 2); // Hex is 2 chars per byte
+        assert_eq!(secret.len(), length * 2);
         assert!(hex::decode(&secret).is_ok());
     }
 
@@ -32,7 +32,6 @@ mod tests {
     fn test_secret_base64_length() {
         let length = 32;
         let secret = generate_secret(length, SecretEncoding::Base64);
-        // Base64 length is roughly 4/3 of original, padded
         assert!(general_purpose::STANDARD.decode(&secret).is_ok());
     }
 }

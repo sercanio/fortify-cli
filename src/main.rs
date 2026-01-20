@@ -110,7 +110,6 @@ fn finalize_output(text: String, is_password: bool, no_copy: bool) {
     if is_password {
         let estimate = zxcvbn(&text, &[]);
         println!("Strength: {}/4", estimate.score());
-        // Simple feedback if available
         if let Some(feedback) = estimate.feedback() {
              if let Some(warning) = feedback.warning() {
                  println!("Warning: {}", warning);
@@ -119,13 +118,9 @@ fn finalize_output(text: String, is_password: bool, no_copy: bool) {
     }
 
     if !no_copy {
-        // Attempt to copy to clipboard
         match copy_text(&text) {
             ClipboardResult::Success => println!("(Copied to clipboard)"),
             ClipboardResult::Error(e) => {
-                // Only print verbose error if it's not the common "unavailable" case
-                // For now, we mimic old behavior: valid clipboard but failed write might be interesting
-                // but "headless" is treated as silent unavailable.
                  if env::var("RUST_LOG").is_ok() {
                      eprintln!("Clipboard error: {}", e);
                  }
@@ -180,7 +175,7 @@ fn interactive_password() {
     };
 
     let result = generate_password(&config);
-    finalize_output(result, true, false); // Interactive mode defaults to auto-copy
+    finalize_output(result, true, false);
 }
 
 fn interactive_guid() {
