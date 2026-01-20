@@ -1,0 +1,9 @@
+sign-commit = true
+sign-tag = true
+push-remote = "origin"
+tag-prefix = "v"
+tag-name = "{{version}}"
+pre-release-replacements = [
+  {file="CHANGELOG.md", search="## \[Unreleased\]", replace="## [{{version}}] - {{date}}"},
+]
+

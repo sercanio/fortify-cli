@@ -12,6 +12,22 @@ A robust CLI tool for generating strong passwords, GUIDs/UUIDs, and cryptographi
 
 ## Installation
 
+### Unix (Linux/macOS)
+```bash
+curl --proto '=https' --tlsv1.2 -LsSf https://github.com/YOUR_USERNAME/fortify-cli/releases/latest/download/fortify-cli-installer.sh | sh
+```
+
+### Windows (PowerShell)
+```powershell
+powershell -c "irm https://github.com/YOUR_USERNAME/fortify-cli/releases/latest/download/fortify-cli-installer.ps1 | iex"
+```
+
+### Cargo Binstall
+```bash
+cargo binstall fortify-cli
+```
+
+### From Source
 ```bash
 cargo install --path .
 ```
