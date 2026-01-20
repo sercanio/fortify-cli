@@ -1,13 +1,15 @@
 mod password;
 mod guid;
 mod secret;
+mod clipboard;
 
+use std::env;
 use clap::{Parser, Subcommand};
 use dialoguer::{theme::ColorfulTheme, Select, Input, MultiSelect};
 use password::{PasswordConfig, generate_password};
 use guid::{GuidVersion, generate_guid};
 use secret::{SecretEncoding, generate_secret};
-use arboard::Clipboard;
+use clipboard::{copy_text, ClipboardResult};
 use zxcvbn::zxcvbn;
 
 #[derive(Parser)]
@@ -118,17 +120,18 @@ fn finalize_output(text: String, is_password: bool, no_copy: bool) {
 
     if !no_copy {
         // Attempt to copy to clipboard
-        // Note: In some headless environments this might fail, we catch it.
-        match Clipboard::new() {
-            Ok(mut clipboard) => {
-                if let Err(_) = clipboard.set_text(text) {
-                    // Silently fail or minimal error if desired, but user might expect copy
-                } else {
-                     println!("(Copied to clipboard)");
-                }
+        match copy_text(&text) {
+            ClipboardResult::Success => println!("(Copied to clipboard)"),
+            ClipboardResult::Error(e) => {
+                // Only print verbose error if it's not the common "unavailable" case
+                // For now, we mimic old behavior: valid clipboard but failed write might be interesting
+                // but "headless" is treated as silent unavailable.
+                 if env::var("RUST_LOG").is_ok() {
+                     eprintln!("Clipboard error: {}", e);
+                 }
             },
-            Err(_) => {
-                // Clipboard not available (e.g. server without X11)
+            ClipboardResult::Unavailable => {
+                // Headless or unsupported, silent ignore
             }
         }
     }
