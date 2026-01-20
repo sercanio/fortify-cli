@@ -2,7 +2,7 @@ mod password;
 mod guid;
 mod secret;
 
-use clap::{Parser, Subcommand, ValueEnum};
+use clap::{Parser, Subcommand};
 use dialoguer::{theme::ColorfulTheme, Select, Input, MultiSelect};
 use password::{PasswordConfig, generate_password};
 use guid::{GuidVersion, generate_guid};
@@ -27,69 +27,72 @@ enum Commands {
         #[arg(short, long, default_value_t = 16)]
         length: usize,
         
-        #[arg(long, default_value_t = false)]
-        no_uppercase: bool,
+        #[arg(short, long)]
+        uppercase: bool,
         
-        #[arg(long, default_value_t = false)]
-        no_lowercase: bool,
+        #[arg(short = 'w', long)]
+        lowercase: bool,
         
-        #[arg(long, default_value_t = false)]
-        no_numbers: bool,
+        #[arg(short, long)]
+        numbers: bool,
         
-        #[arg(long, default_value_t = false)]
-        no_symbols: bool,
+        #[arg(short, long)]
+        symbols: bool,
     },
     Guid {
-        #[arg(short, long, value_enum, default_value_t = CliGuidVersion::V4)]
-        version: CliGuidVersion,
+        #[arg(long, conflicts_with = "v7")]
+        v4: bool,
+
+        #[arg(long, conflicts_with = "v4")]
+        v7: bool,
     },
     Secret {
         #[arg(short, long, default_value_t = 32)]
         length: usize,
-        #[arg(short, long, value_enum, default_value_t = CliSecretEncoding::Hex)]
-        encoding: CliSecretEncoding,
+        
+        #[arg(long, conflicts_with = "base64")]
+        hex: bool,
+
+        #[arg(long, conflicts_with = "hex")]
+        base64: bool,
     },
-}
-
-#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
-enum CliGuidVersion {
-    V4,
-    V7,
-}
-
-#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
-enum CliSecretEncoding {
-    Hex,
-    Base64,
 }
 
 fn main() {
     let cli = Cli::parse();
 
     match &cli.command {
-        Some(Commands::Password { length, no_uppercase, no_lowercase, no_numbers, no_symbols }) => {
+        Some(Commands::Password { length, uppercase, lowercase, numbers, symbols }) => {
+             let (u, l, n, s) = if !*uppercase && !*lowercase && !*numbers && !*symbols {
+                 (true, true, true, true)
+             } else {
+                 (*uppercase, *lowercase, *numbers, *symbols)
+             };
+
              let config = PasswordConfig {
                  length: *length,
-                 uppercase: !no_uppercase,
-                 lowercase: !no_lowercase,
-                 numbers: !no_numbers,
-                 symbols: !no_symbols,
+                 uppercase: u,
+                 lowercase: l,
+                 numbers: n,
+                 symbols: s,
              };
              let result = generate_password(&config);
              finalize_output(result, true, cli.no_copy);
         },
-        Some(Commands::Guid { version }) => {
-            let v = match version {
-                CliGuidVersion::V4 => GuidVersion::V4,
-                CliGuidVersion::V7 => GuidVersion::V7,
+        Some(Commands::Guid { v4: _, v7 }) => {
+            let v = if *v7 {
+                GuidVersion::V7
+            } else {
+                GuidVersion::V4
             };
             let result = generate_guid(v);
             finalize_output(result, false, cli.no_copy);
         },
-        Some(Commands::Secret { length, encoding }) => {
-             let enc = match encoding {
-                 CliSecretEncoding::Hex => SecretEncoding::Hex,
-                 CliSecretEncoding::Base64 => SecretEncoding::Base64,
+        Some(Commands::Secret { length, hex: _, base64 }) => {
+             let enc = if *base64 {
+                 SecretEncoding::Base64
+             } else {
+                 SecretEncoding::Hex
              };
              let result = generate_secret(*length, enc);
              finalize_output(result, false, cli.no_copy);

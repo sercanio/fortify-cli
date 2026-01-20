@@ -28,29 +28,36 @@ fortify-cli
 
 **Generate a Password:**
 ```bash
-fortify-cli password --length 20 --no-symbols
+# Default (16 chars, all character sets)
+fortify-cli password
+
+# Specific length and character sets (e.g., only numbers)
+fortify-cli password --length 20 --numbers
 ```
 Options:
 - `--length <N>` (Default: 16)
-- `--no-uppercase`
-- `--no-lowercase`
-- `--no-numbers`
-- `--no-symbols`
+- `--uppercase`
+- `--lowercase`
+- `--numbers`
+- `--symbols`
+(If no character sets are specified, all are enabled by default)
 
 **Generate a GUID:**
 ```bash
-fortify-cli guid --version v4
+fortify-cli guid --v4
 ```
 Options:
-- `--version <v4|v7>` (Default: v4)
+- `--v4` (Default)
+- `--v7` (Time-ordered)
 
 **Generate a Secret:**
 ```bash
-fortify-cli secret --length 64 --encoding base64
+fortify-cli secret --length 64 --base64
 ```
 Options:
 - `--length <N>` (Default: 32)
-- `--encoding <hex|base64>` (Default: hex)
+- `--hex` (Default)
+- `--base64`
 
 **Global Options:**
 - `--no-copy`: Disable automatic clipboard copying.
