@@ -15,7 +15,7 @@ pr-run-mode = "plan"
 
 [package]
 name = "fortify-cli"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 description = "A robust CLI tool for generating strong passwords, GUIDs/UUIDs, and cryptographically secure secrets."
 repository = "https://github.com/sercanio/fortify-cli"
